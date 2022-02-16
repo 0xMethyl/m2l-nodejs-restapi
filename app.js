@@ -1,6 +1,7 @@
 require('dotenv').config({ path: `./config/${process.env.NODE_ENV}.env` })
 
 const express = require('express');
+const session = require('express-session');
 
 const app = express();
 
