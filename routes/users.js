@@ -3,8 +3,7 @@ const router = require('express-promise-router')();
 const { 
     selectAll,
     login,
-    register
-
+    register,
 } = require('../controllers/users');
 
 router.route('/')
@@ -15,5 +14,8 @@ router.route("/login")
 
 router.route("/register")
     .post(register)
+
+router.route("/allUsers")
+    .get(selectAll)
 
 module.exports = router;

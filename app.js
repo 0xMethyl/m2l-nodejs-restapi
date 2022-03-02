@@ -13,8 +13,10 @@ app.use(express.json({
   }));
 
 const usersRoute = require('./routes/users');
+const produitsRoute = require('./routes/produits');
 
 app.use('/users', usersRoute);
+app.use('/produits', produitsRoute);
 
 app.get('/api', (_, res) => res.send("Hello from API v1"));
 
