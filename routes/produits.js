@@ -1,10 +1,10 @@
 const router = require('express-promise-router')();
 
 const { 
-    retrieveProduits
-} = require('../controllers/users');
+    getAll
+} = require('../controllers/produits');
 
-router.route("/all")
-    .get(retrieveProduits)
+router.route("/")
+    .get(getAll)
 
 module.exports = router;
