@@ -6,12 +6,11 @@ const bcrypt = require('bcrypt');
 const saltRounds = 11;
 
 const express = require('express');
-const session = require('express-session');
 
 const app = express();
 
 module.exports = {
-    register: async (req, res, next) => {
+    register: async (req, res) => {
 
         let connexion;
 
@@ -28,12 +27,12 @@ module.exports = {
         console.log("Date de naissance : " + req.body.datenaissance);
 
         try {
-            const encryptedPassword = await bcrypt.hash(req.body.password, saltRounds)
+            const encryptedPassword = await bcrypt.hash(req.body.password, saltRounds);
 
            // if (! (req.body.genre && req.body.email && req.body.password && req.body.confirm_password && req.body.nom && req.body.prenom && req.body.adresse && req.body.telephone && req.body.ville && req.body.codepostal && req.body.datenaissance)){
             //    if (req.body.password == req.body.confirm_password){
             connexion = await pool.getConnection();
-            const result = await connexion.query("INSERT INTO `t_client`(`client_genre`, `client_email`, `client_password`, `client_nom`, `client_prenom`, `client_adresse`, `client_phone`, `client_ville`, `client_codepostal`, `client_datenaissance`, `isAdmin`) VALUES ('" + req.body.genre + "', '" + req.body.email + "','" + encryptedPassword + "', '" + req.body.nom + "','" + req.body.prenom + "','" + req.body.adresse + "','" + req.body.telephone + "','" + req.body.ville + "','" + req.body.codepostal + "','" + req.body.datenaissance + ", '0')"); // curl -d '{"genre": "Monsieur", "email": "user1@gmail.com", "password": "user1", "nom": "Jorès", "prenom": "Jean", "adresse": "2 rue de londres", "ville": "Angers", "codepostal": 49000, "datenaissance": "1970-12-31", isAdmin: 0}' -X POST "http://localhost:3001/users/register" -H 'Content-Type: application/json'                console.log(result);
+            const result = await connexion.query("INSERT INTO `t_client`(`client_genre`, `client_email`, `client_password`, `client_nom`, `client_prenom`, `client_adresse`, `client_phone`, `client_ville`, `client_codepostal`, `client_datenaissance`, `isAdmin`) VALUES ('" + req.body.genre + "', '" + req.body.email + "','" + encryptedPassword + "', '" + req.body.nom + "','" + req.body.prenom + "','" + req.body.adresse + "','" + req.body.telephone + "','" + req.body.ville + "','" + req.body.codepostal + "','" + req.body.datenaissance + ", 0)"); // curl -d '{"genre": "Monsieur", "email": "user1@gmail.com", "password": "user1", "nom": "Jorès", "prenom": "Jean", "adresse": "2 rue de londres", "ville": "Angers", "codepostal": 49000, "datenaissance": "1970-12-31", isAdmin: 0}' -X POST "http://localhost:3001/users/register" -H 'Content-Type: application/json'                console.log(result);
             res.writeHead(302, {
                     'Location': 'http://localhost:3000/'
             });
@@ -44,16 +43,28 @@ module.exports = {
         } catch (error) {
             return res.status(400).json({ error: error.message });
         } finally {
-            if (connexion) connexion.end()
+            if (connexion) connexion.end();
         }
     },
-    login: async (req, res) => {
+    loginG: async (req, res) => {
+        
+        if(req.session.client_email){
+            res.send({loggedIn: true, email: req.session.client_email});
+        } else {
+            res.send({loggedIn: false});
+        }
+    },
+    loginP: async (req, res) => {
 
         let connexion;
+
         console.log("Email : " + req.body.email);
         console.log("Password : " + req.body.password);
+
         try {
             connexion = await pool.getConnection();
+
+            
             if (req.body.email && req.body.password){
                 const mailExist = await connexion.query("SELECT * FROM t_client WHERE client_email = '" + req.body.email + "'"); 
                 const passEnc = await connexion.query("SELECT client_password FROM t_client WHERE client_email = '" + req.body.email + "'"); 
@@ -66,24 +77,36 @@ module.exports = {
                     if(comparison){  
                         console.log('Good password.');
                         req.session.loggedIn = true;
-                        
                         req.session.client_email = req.body.email;
 
-                        res.header('Access-Control-Allow-Credentials', true);
-                        res.header('Access-Control-Allow-Origin', 'http://localhost:3001/'); // only_one_url_here');
-                        res.header('Access-Control-Allow-Headers', 'Content-Type, POST, GET, OPTIONS, DELETE');
+                        /*
+                        console.log(res.locals)
+                        res.locals.loggedIn = req.session.loggedIn;
+                        res.locals.client_email = req.session.client_email;
+                        */
                         
                         console.log(req.session);
-                        
+
+                        req.session.save(function(){
+                            return res.redirect('/');
+                        });
+
+                        next();  
+
+                        // return res.send({loggedIn: req.session.loggedIn, email: req.session.client_email});
+
                     } else {
-                        console.log('Bad password.')
+                        console.log('Bad password.');
+                        return res.send({message: "Mauvais mot de passe !"});
                     }
 
                 } else {
-                    console.log("Bad mail.")
+                    console.log("Bad mail.");
+                    return res.send({message: "Ce compte n'existe pas !"});
                 }
             }
-            return res.status(200).json({ success: result});
+
+            
 
         } catch (error) {
             return res.status(400).json({ error: error.message });
@@ -92,8 +115,8 @@ module.exports = {
         }
     },
     retrieveUsersData: async (req, res) => {
-
         console.log(req.session);
+        await res.send("E-mail : " + req.session.client_email);
         /*
         if(req.session.loggedIn == false){
             let connexion = await pool.getConnection();
@@ -111,7 +134,7 @@ module.exports = {
         */
     },
     checkLoginStatus: async (req, res) => {
-        const { email } = req.session;
+        const { email } = req.session.client_email;
             if (email) {
                 return res.status(200).json({ success: { email } });
             }

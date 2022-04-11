@@ -1,13 +1,14 @@
 require('dotenv').config({ path: `./config/${process.env.NODE_ENV}.env` })
 
+const cors = require("cors");
 const express = require('express');
+
 const session = require('express-session');
 const cookieSession = require('cookie-session');
-const app = express();
-const cors = require("cors");
-const passport = require('passport');
+const cookieParser = require('cookie-parser');
+const bodyParser = require("body-parser");
 
-app.use(cookieParser());
+const app = express();
 
 app.use(cookieSession({
   name: 'session',
@@ -17,7 +18,6 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }))
 
-app.set('trust proxy', 1)
 app.use(express.json({
     type: 'application/json',
 }));
@@ -27,17 +27,16 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(session({
-  secret: 'ma_session_super_secret_key',
-  saveUninitialized: false,
-  resave: true,
-  cookie: {
-    maxAge: 30*24*60*60*1000, 
-    secure: false, 
-    httpOnly: true,
-  }
-}));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended: true}));
 
+app.use(session({
+    key: 'ma_session_super_key',
+    secret: 'ma_session_super_secret_key',
+    saveUninitialized: false,
+    resave: false,
+  })
+);
 
 const usersRoute = require('./routes/users');
 const produitsRoute = require('./routes/produits');

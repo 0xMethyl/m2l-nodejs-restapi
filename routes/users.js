@@ -3,7 +3,8 @@ const router = require('express-promise-router')();
 const { 
     selectAll,
     retrieveUsersData,
-    login,
+    loginG,
+    loginP,
     register,
     disconnect,
     checkLoginStatus
@@ -12,9 +13,12 @@ const {
 router.route('/')
     .get(selectAll)
 
+router.route('/login')
+    .get(loginG)
+
 router.route("/login")
     .get(checkLoginStatus)
-    .post(login)
+    .post(loginP)
 
 router.route("/retrieveUsersData")
     .get(retrieveUsersData)
