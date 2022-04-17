@@ -1,10 +1,18 @@
 const router = require('express-promise-router')();
 
 const { 
-    getAll
+    getAll,
+    getById,
+    search
 } = require('../controllers/produits');
 
 router.route("/")
-    .get(getAll)
+    .get(getAll);
+
+router.route("/:id")
+    .get(getById);
+
+router.route("/search/:keyword")
+    .get(search);
 
 module.exports = router;

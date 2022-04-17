@@ -31,12 +31,11 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.use(session({
-    key: 'ma_session_super_key',
-    secret: 'ma_session_super_secret_key',
-    saveUninitialized: false,
-    resave: false,
-  })
-);
+  secret: 'ma_session_super_secret_key',
+  saveUninitialized: false,
+  resave: false,
+  cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
+}));
 
 const usersRoute = require('./routes/users');
 const produitsRoute = require('./routes/produits');
