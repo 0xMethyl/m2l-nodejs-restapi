@@ -13,11 +13,11 @@ const {
 router.route('/')
     .get(selectAll)
 
-router.route('/login')
-    .get(loginG)
+/* router.route('/login')
+    .get(loginG) */
 
 router.route("/login")
-    .get(checkLoginStatus)
+    .get(loginG)
     .post(loginP)
 
 router.route("/retrieveUsersData")

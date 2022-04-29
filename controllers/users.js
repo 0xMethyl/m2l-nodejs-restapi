@@ -89,23 +89,15 @@ module.exports = {
                         req.session.client_datenaissance = result[0].client_datenaissance;
                         req.session.isAdmin = result[0].isAdmin;
                         
+                        console.log(req.cookies)
 
                         /*
                         console.log(res.locals)
                         res.locals.loggedIn = req.session.loggedIn;
                         res.locals.client_email = req.session.client_email;
                         */
-                        
-                        console.log(req.session);
 
-                        req.session.save(function(){
-                            return res.json({message: "Good Password, opening session"});
-                        });
-
-                        next();  
-
-                        // return res.send({loggedIn: req.session.loggedIn, email: req.session.client_email});
-
+                        return res.status(200).json({loggedIn: req.session.loggedIn});
                     } else {
                         console.log('Bad password.');
                         return res.send({message: "Mauvais mot de passe !"});
@@ -116,9 +108,6 @@ module.exports = {
                     return res.send({message: "Ce compte n'existe pas !"});
                 }
             }
-
-            
-
         } catch (error) {
             return res.status(400).json({ error: error.message });
         } finally {
@@ -130,10 +119,10 @@ module.exports = {
         await res.send("E-mail : " + req.session.client_email);
     },
     checkLoginStatus: async (req, res) => {
-        const { email } = req.session.client_email;
-            if (email) {
-                console.log(email);
-                return res.status(200).json({ success: { email } });
+        const { client_email } = req.session;
+            if (client_email) {
+                console.log(client_email);
+                return res.status(200).json({ success: { client_email } });
             }
         return res.status(403).send();
     },

@@ -4,19 +4,10 @@ const cors = require("cors");
 const express = require('express');
 
 const session = require('express-session');
-const cookieSession = require('cookie-session');
 const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
 
 const app = express();
-
-app.use(cookieSession({
-  name: 'session',
-  keys: "ghsdhqsg",
-
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
 
 app.use(express.json({
     type: 'application/json',
@@ -24,18 +15,26 @@ app.use(express.json({
 
 app.use(cors({
   origin: "http://localhost:3000",
-  credentials: true
+  credentials: true,
+
 }));
 
+app.set("trust proxy", 1),
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(session({
-  secret: 'ma_session_super_secret_key',
-  saveUninitialized: false,
-  resave: false,
-  cookie: { httpOnly: true, maxAge: 1000 * 60 * 60 * 24 }
-}));
+app.use(
+  session({
+    resave: false,
+    saveUninitialized: true,
+    secret: "sessions",
+    cookie: {
+      maxAge: 1000 * 60 * 60,
+      secure: false,
+      httpOnly: true
+    },
+  })
+);
 
 const usersRoute = require('./routes/users');
 const produitsRoute = require('./routes/produits');

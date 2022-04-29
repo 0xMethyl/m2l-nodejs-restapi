@@ -5,6 +5,7 @@ const {
     getById,
     getAllCategory,
     getByCategory,
+    getStockById,
     search
 } = require('../controllers/produits');
 
@@ -19,6 +20,9 @@ router.route("/categories/:id")
 
 router.route("/:id")
     .get(getById);
+
+router.route("/stock/:id")
+    .get(getStockById);
 
 router.route("/search/:keyword")
     .get(search);
