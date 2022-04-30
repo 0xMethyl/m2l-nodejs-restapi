@@ -30,26 +30,29 @@ module.exports = {
             console.log("Codepostal : " + req.body.codepostal);
             console.log("Date de naissance : " + req.body.datenaissance);
 
-           // if (! (req.body.genre && req.body.email && req.body.password && req.body.confirm_password && req.body.nom && req.body.prenom && req.body.adresse && req.body.telephone && req.body.ville && req.body.codepostal && req.body.datenaissance)){
-            //    if (req.body.password == req.body.confirm_password){
-            connexion = await pool.getConnection();
-            const result = await connexion.query("INSERT INTO `t_client` (`client_genre`, `client_email`, `client_password`, `client_nom`, `client_prenom`, `client_adresse`, `client_phone`, `client_ville`, `client_codepostal`, `client_datenaissance`, `isAdmin`) VALUES ('" + req.body.genre + "', '" + req.body.email + "','" + encryptedPassword + "', '" + req.body.nom + "','" + req.body.prenom + "','" + req.body.adresse + "','" + req.body.telephone + "','" + req.body.ville + "','" + req.body.codepostal + "','" + req.body.datenaissance + "', 0)"); // curl -d '{"genre": "Monsieur", "email": "user1@gmail.com", "password": "user1", "nom": "Jorès", "prenom": "Jean", "adresse": "2 rue de londres", "ville": "Angers", "codepostal": 49000, "datenaissance": "1970-12-31", isAdmin: 0}' -X POST "http://localhost:3001/users/register" -H 'Content-Type: application/json'                console.log(result);
+            if (! (req.body.genre && req.body.email && req.body.password && req.body.confirm_password && req.body.nom && req.body.prenom && req.body.adresse && req.body.telephone && req.body.ville && req.body.codepostal && req.body.datenaissance)){
+                if (req.body.password == req.body.confirm_password){
+                    connexion = await pool.getConnection();
+                    const result = await connexion.query("INSERT INTO `t_client` (`client_genre`, `client_email`, `client_password`, `client_nom`, `client_prenom`, `client_adresse`, `client_phone`, `client_ville`, `client_codepostal`, `client_datenaissance`, `isAdmin`) VALUES ('" + req.body.genre + "', '" + req.body.email + "','" + encryptedPassword + "', '" + req.body.nom + "','" + req.body.prenom + "','" + req.body.adresse + "','" + req.body.telephone + "','" + req.body.ville + "','" + req.body.codepostal + "','" + req.body.datenaissance + "', 0)"); // curl -d '{"genre": "Monsieur", "email": "user1@gmail.com", "password": "user1", "nom": "Jorès", "prenom": "Jean", "adresse": "2 rue de londres", "ville": "Angers", "codepostal": 49000, "datenaissance": "1970-12-31", isAdmin: 0}' -X POST "http://localhost:3001/users/register" -H 'Content-Type: application/json'                console.log(result);
 
-            return res.status(200).json({ success: result });
-             //   }
-          //  }
-            
-        } catch (error) {
+                    return res.status(200).json({ success: result });
+                }
+            }
+        } catch (error) {       
             return res.status(400).json({ error: error.message });
         } finally {
             if (connexion) connexion.end();
         }
     },
     loginG: async (req, res) => {
-        
-        if(req.session.client_email){
-            res.send({loggedIn: true, email: req.session.client_email});
-        } else {
+        try{
+            if(req.session.client_email){
+                res.send({loggedIn: true, email: req.session.client_email});
+            } else {
+                res.send({loggedIn: false});
+            }
+        }catch {
+            console.log(res)
             res.send({loggedIn: false});
         }
     },
@@ -139,9 +142,13 @@ module.exports = {
             if (connexion) connexion.end();
         }
     },
-    disconnect: async (req, res) => {
-        if(req.session.loggedIn == true){
+
+    logout: async (req, res) => {
+        if (req.session.loggedIn === true) {
             req.session.destroy();
-        }
+            return res.status(200).json({result: 'SUCCESS'});
+        } else {
+            return res.stgatsu(400).json({result: 'ERROR'});
+        }   
     }
 }

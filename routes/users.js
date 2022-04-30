@@ -6,15 +6,14 @@ const {
     loginG,
     loginP,
     register,
-    disconnect,
-    checkLoginStatus
+    logout,
 } = require('../controllers/users');
 
 router.route('/')
     .get(selectAll)
 
-/* router.route('/login')
-    .get(loginG) */
+router.route('/login')
+    .get(loginG) 
 
 router.route("/login")
     .get(loginG)
@@ -29,7 +28,7 @@ router.route("/register")
 router.route("/allUsers")
     .get(selectAll)
 
-router.route("/disconnect")
-    .get(disconnect)
+router.route("/logout")
+    .post(logout)
 
 module.exports = router;

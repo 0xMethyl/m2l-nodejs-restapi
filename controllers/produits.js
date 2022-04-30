@@ -9,7 +9,7 @@ module.exports = {
         let connexion;
         try {
             connexion = await pool.getConnection();
-            const result = await connexion.query('SELECT * FROM t_produit INNER JOIN t_categorie ON t_produit.produit_id = t_categorie.categorie_id WHERE produit_quantite > 0');
+            const result = await connexion.query('SELECT * FROM t_produit INNER JOIN t_categorie ON t_produit.produit_id = t_categorie.categorie_id WHERE produit_quantite > 0;');
             console.log(result);
             return res.status(200).json({ success: result });
         } catch (error) {
@@ -23,7 +23,7 @@ module.exports = {
         let connexion;
         try{
             connexion = await pool.getConnection();
-            const result = await connexion.query('SELECT * FROM t_produit WHERE produit_id = ' + req.params.id);
+            const result = await connexion.query('SELECT * FROM t_produit WHERE produit_id = ' + req.params.id + ";");
             console.log(result);
             return res.status(200).json({ success: result });
         }catch (error) {
@@ -51,7 +51,7 @@ module.exports = {
         let connexion 
         try{
             connexion = await pool.getConnection();
-            const result = await connexion.query('SELECT * FROM t_produit INNER JOIN t_categorie ON t_produit.produit_id = t_categorie.categorie_id WHERE t_categorie.categorie_id = ' + req.params.id);
+            const result = await connexion.query('SELECT * FROM t_produit INNER JOIN t_categorie ON t_produit.produit_id = t_categorie.categorie_id WHERE t_categorie.categorie_id = ' + req.params.id + ";");
             console.log(result);
             return res.status(200).json({ success: result });
         }catch (error) {
@@ -80,7 +80,7 @@ module.exports = {
         let connexion;
         try {
             connexion = await pool.getConnection();
-            const result = await connexion.query('SELECT produit_quantite FROM t_produit WHERE produit_id = ' + req.params.id);
+            const result = await connexion.query('SELECT produit_quantite FROM t_produit WHERE produit_id = ' + req.params.id + ";");
             console.log(result);
             return res.status(200).json({ success: result });
         } catch (error) {
