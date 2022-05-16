@@ -6,7 +6,8 @@ const {
     getAllCategory,
     getByCategory,
     getStockById,
-    search
+    search,
+    addToCart
 } = require('../controllers/produits');
 
 router.route("/")
@@ -26,5 +27,8 @@ router.route("/stock/:id")
 
 router.route("/search/:keyword")
     .get(search);
+
+router.route("/addToCart/:id/:qty")
+    .get(addToCart);
 
 module.exports = router;

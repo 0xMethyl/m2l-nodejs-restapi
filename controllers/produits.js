@@ -2,8 +2,9 @@ const pool = require('../config/database');
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
-const saltRounds = 11;
+var Cart = require("../models/cart");
 
+const saltRounds = 11;
 module.exports = {
     getAll: async (req, res) =>{
         let connexion;
@@ -25,7 +26,7 @@ module.exports = {
             connexion = await pool.getConnection();
             const result = await connexion.query('SELECT * FROM t_produit WHERE produit_id = ' + req.params.id + ";");
             console.log(result);
-            return res.status(200).json({ success: result });
+            return res.status(200).json({ success: result.produit_id });
         }catch (error) {
             return res.status(400).json({ error: error.message });
         } finally {
@@ -83,6 +84,41 @@ module.exports = {
             const result = await connexion.query('SELECT produit_quantite FROM t_produit WHERE produit_id = ' + req.params.id + ";");
             console.log(result);
             return res.status(200).json({ success: result });
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        } finally {
+            if (connexion) connexion.end();
+        }
+    },
+
+    addToCart: async(req, res) => {
+        let connexion;
+        try {
+
+            connexion = await pool.getConnection();
+            const result = await connexion.query('SELECT * FROM t_produit WHERE produit_id = ' + req.params.id + ";");
+            console.log(result);
+
+            var cart = new Cart(req.session.cart ? req.session.cart : {items: {}});
+
+            var actCart = {
+                "produit_id":result[0].produit_id,
+                "produit_nom":result[0].produit_nom,
+                "produit_marque":result[0].produit_marque,
+                "produit_poids":result[0].produit_poids,
+                "produit_taille":result[0].produit_taille,
+                "produit_quantite":result[0].produit_quantite,
+                "produit_prix":result[0].produit_prix,
+                "produit_categories":result[0].produit_categories
+            }
+            
+            cart.add(actCart, req.params.id, req.params.qty)
+
+            req.session.cart = cart;
+            console.log(actCart)
+            console.log(req.session.cart)
+
+            return cart;
         } catch (error) {
             return res.status(400).json({ error: error.message });
         } finally {

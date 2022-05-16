@@ -11,11 +11,11 @@ BEGIN
 END; //
 
 -- USER LOGIN
-CREATE OR REPLACE PROCEDURE checkCredentials(IN p_user_email VARCHAR(255), IN p_user_password VARCHAR(255))
+CREATE OR REPLACE PROCEDURE checkLogin(IN p_user_email VARCHAR(255), IN p_user_password VARCHAR(255))
 NOT DETERMINISTIC
 CONTAINS SQL
 BEGIN
-    SELECT id, email
-    FROM User
-    WHERE User.email = p_user_email AND User.password = SHA2(p_user_password, 512);
+    SELECT client_id, client_email, client_password
+    FROM t_client
+    WHERE t_client.client_email = p_user_email LIMIT 1;
 END //
