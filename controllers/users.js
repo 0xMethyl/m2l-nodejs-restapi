@@ -61,7 +61,7 @@ module.exports = {
     loginG: async (req, res) => {
         try{
             if(req.session.client_email){
-                res.send({loggedIn: true, email: req.session.client_email});
+                res.send({loggedIn: true, email: req.session.client_email, nom:req.session.client_nom, prenom:req.session.client_prenom, adresse:req.session.client_adresse, telephone:req.session.client_phone, genre:req.session.client_genre, datenaissance:req.session.client_datenaissance });
             } else {
                 res.send({loggedIn: false});
             }

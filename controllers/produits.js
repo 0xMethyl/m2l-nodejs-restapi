@@ -24,9 +24,9 @@ module.exports = {
         let connexion;
         try{
             connexion = await pool.getConnection();
-            const result = await connexion.query('SELECT * FROM t_produit WHERE produit_id = ' + req.params.id + ";");
+            const result = await connexion.query('SELECT * FROM t_produit WHERE produit_id = ' + req.params.id);
             console.log(result);
-            return res.status(200).json({ success: result.produit_id });
+            return res.status(200).json({ success: result });
         }catch (error) {
             return res.status(400).json({ error: error.message });
         } finally {
