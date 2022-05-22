@@ -99,23 +99,40 @@ module.exports = {
             const result = await connexion.query('SELECT * FROM t_produit WHERE produit_id = ' + req.params.id + ";");
             console.log(result);
 
-            var cart = new Cart(req.session.cart ? req.session.cart : {items: {}});
+            prodId = req.params.id;
+            prodQty = parseInt(req.params.qty);
 
-            var actCart = {
+            var cart = cart || {
+                items: [],
+                totalQty: 0,
+                totalPrice: 0
+            }
+
+            req.session.cart = cart;
+            
+            var prod = {
                 "produit_id":result[0].produit_id,
                 "produit_nom":result[0].produit_nom,
                 "produit_marque":result[0].produit_marque,
                 "produit_poids":result[0].produit_poids,
                 "produit_taille":result[0].produit_taille,
-                "produit_quantite":result[0].produit_quantite,
+                "produit_quantite":prodQty,
                 "produit_prix":result[0].produit_prix,
                 "produit_categories":result[0].produit_categories
-            }
+            };
             
-            cart.add(actCart, req.params.id, req.params.qty)
+            cart.items.push({
+                "itemId": prod.produit_id, 
+                "itemNom": prod.produit_nom,
+                "itemQty": prod.produit_quantite, 
+                "itemPrix": prod.produit_prix * prod.produit_quantite
+            });
 
-            req.session.cart = cart;
-            console.log(actCart)
+            cart.totalPrice += parseInt(prodQty * result[0].produit_prix);
+            cart.totalQty += prodQty;
+            
+            req.session.cart += cart ;
+
             console.log(req.session.cart)
 
             return cart;
