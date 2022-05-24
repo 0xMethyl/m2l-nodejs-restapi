@@ -2,7 +2,6 @@ const pool = require('../config/database');
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt'); 
-var Cart = require("../models/cart");
 
 const saltRounds = 11;
 module.exports = {
